@@ -6,16 +6,16 @@ export class User extends BaseEntity {
     public id: string
 
     @Column({
-        type: 'string',
+        type: 'varchar',
         length: 60,
         default: null,
     })
-    firstName: string
+    firstName: string;
 
     @Column({
-        type: 'string',
+        type: 'varchar',
         length: 60,
         default: null,
     })
-    lastName: string
+    lastName: string;
 }
