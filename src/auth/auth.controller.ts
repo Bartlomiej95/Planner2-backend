@@ -1,4 +1,4 @@
-import { Controller, Post, Res, Inject, UseGuards, Body } from '@nestjs/common';
+import { Controller, Post, Res, Inject, UseGuards, Body, Delete } from '@nestjs/common';
 import { Response } from 'express';
 import { AuthGuard } from '@nestjs/passport';
 import { UserService } from 'src/user/user.service';
@@ -7,6 +7,7 @@ import { UserObj } from 'src/common/decorators/user.decorator';
 import { User } from 'src/user/entities/user.entity';
 import { RegistrationDto } from './dto/registration.dto';
 import { ActivationDto } from './dto/activation.dto';
+import { JwtAuthGuard } from 'src/common/guards/jwt-auth.guard';
 
 @Controller('')
 export class AuthController {
@@ -40,4 +41,14 @@ export class AuthController {
     ) {
         return await this.authService.activate(req, res);
     }
+
+    @Delete('/logout')
+    @UseGuards(JwtAuthGuard)
+    async logout(
+        @Res({ passthrough: true }) res: Response,
+        @UserObj() user: User,
+    ): Promise<{ok: boolean}> {
+
+    return this.authService.logout(user, res);
+  }
 }

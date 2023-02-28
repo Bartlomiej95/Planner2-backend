@@ -154,4 +154,19 @@ export class AuthService {
                 .json({ message: "Błąd serwera"})
         }
     }
+
+    async logout(user: User, res: Response): Promise<{ ok: boolean}> {
+        if (!user?.jwtId) return { ok: false };
+    
+        user.jwtId = null;
+        await user.save();
+    
+        res.clearCookie('access_token', {
+          secure: false,
+          httpOnly: true,
+          maxAge: config.jwtCookieTimeToExpire,
+        });
+    
+        return { ok: true };
+      }
 }
