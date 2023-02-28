@@ -1,4 +1,4 @@
-import { BaseEntity, Entity, PrimaryGeneratedColumn, Column } from "typeorm";
+import { BaseEntity, Entity, PrimaryGeneratedColumn, Column, Index } from "typeorm";
 
 @Entity()
 export class User extends BaseEntity {
@@ -18,4 +18,49 @@ export class User extends BaseEntity {
         default: null,
     })
     lastName: string;
+
+    @Column({
+        type: 'varchar',
+        length: 60,
+        default: null,
+    })
+    email: string;
+
+    @Column({
+        type: 'varchar',
+        length: 60,
+        default: null,
+    })
+    password: string;
+
+    @Column({
+        length: 36,
+        nullable: true,
+        default: null,
+    })
+    @Index({ unique: true })
+    public userToken: string;
+    
+    @Column({
+        type: 'datetime',
+        nullable: true,
+        default: null,
+    })
+    public userTokenExpiredAt: Date;
+    
+    @Column()
+    public jwtId: string;
+
+    @Column({
+        type: 'bool',
+        default: false,
+      })
+      isActive: boolean;
+      
+      @Column({
+        type: 'varchar',
+        length: 255,
+        default: null,
+      })
+      link: string | null;
 }
