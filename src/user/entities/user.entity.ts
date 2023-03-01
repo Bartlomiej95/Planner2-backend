@@ -1,3 +1,4 @@
+import { Position, Role } from "src/types/user.type";
 import { BaseEntity, Entity, PrimaryGeneratedColumn, Column, Index } from "typeorm";
 
 @Entity()
@@ -63,4 +64,50 @@ export class User extends BaseEntity {
         default: null,
       })
       link: string | null;
+      @Column({
+        default: () => 'CURRENT_TIMESTAMP',
+      })
+      createdAt: Date;
+      
+      @Column({
+        type: 'enum',
+        enum: Role,
+      })
+      role: Role;
+      
+      @Column({
+        type: 'string',
+        array: true,
+      })
+      projects: string[];
+  
+      @Column({
+        type: 'string',
+        array: true
+      })
+      tasks: string[];
+  
+      @Column({
+        type: 'enum',
+        enum: Position
+      })
+      position: Position;
+  
+      @Column({
+        type: 'string',
+        length: 50,
+      })
+      department: string;
+  
+      @Column({
+        type: 'boolean',
+        default: false,
+      })
+      loggedIn: boolean;
+
+      @Column({
+        type: 'varchar',
+        default: null,
+      })
+      comapny: string;
 }
