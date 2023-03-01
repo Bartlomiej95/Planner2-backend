@@ -22,3 +22,5 @@ export enum Position {
     midGraphic = 'Mid Graphic Desinger',
     seniorGraphic = 'Senior Graphic Desinger',
 }
+
+export type ChangePasswordResponse = { ok: boolean}
