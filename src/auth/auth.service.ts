@@ -1,4 +1,4 @@
-import { Injectable, Inject } from '@nestjs/common';
+import { Injectable, Inject, NotFoundException } from '@nestjs/common';
 import { compare } from 'bcrypt';
 import { Response } from 'express';
 import { JwtService } from '@nestjs/jwt';
@@ -168,5 +168,15 @@ export class AuthService {
         });
     
         return { ok: true };
-      }
+    }
+
+    async resetPassword(data: { email: string}): Promise<{ message: string}> {
+
+        const user = await User.findOne({ where: {email: data.email}})
+        
+        if(user){
+            // funkcja wysyłająca maila
+            return { message: 'Na podany adres email został wysłany link do reaktywacji konta' }
+        } else throw new NotFoundException('Nie ma takiego maila w naszej bazie');
+    }
 }

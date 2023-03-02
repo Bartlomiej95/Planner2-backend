@@ -49,6 +49,13 @@ export class AuthController {
         @UserObj() user: User,
     ): Promise<{ok: boolean}> {
 
-    return this.authService.logout(user, res);
-  }
+        return this.authService.logout(user, res);
+    }
+
+    @Delete('/password')
+    async resetPassword(
+        @Body() data: { email: string }
+    ): Promise<{message: string}>{
+        return this.authService.resetPassword(data)
+    }
 }
