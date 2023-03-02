@@ -76,14 +76,12 @@ export class User extends BaseEntity {
       role: Role;
       
       @Column({
-        type: 'string',
-        array: true,
+        type: 'varchar',
       })
       projects: string[];
   
       @Column({
-        type: 'string',
-        array: true
+        type: 'varchar',
       })
       tasks: string[];
   
@@ -94,7 +92,7 @@ export class User extends BaseEntity {
       position: Position;
   
       @Column({
-        type: 'string',
+        type: 'varchar',
         length: 50,
       })
       department: string;
