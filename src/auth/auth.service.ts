@@ -10,12 +10,14 @@ import { ActivationDto } from './dto/activation.dto';
 import { RegistrationDto } from './dto/registration.dto';
 import { randomSigns } from 'src/common/utils/random-signs';
 import { hashPwd } from 'src/common/utils/hashPwd';
+import { MailService } from 'src/common/providers/mail/mail.service';
 
 @Injectable()
 export class AuthService {
     constructor(
         @Inject(UserService) private userService: UserService,
         @Inject(JwtService) private jwtService: JwtService,
+        @Inject(MailService) private mailService: MailService,
     ){}
 
     async validateUser(email: string, password: string): Promise<User | null> {
@@ -136,7 +138,7 @@ export class AuthService {
 
                 await newUser.save();
 
-                // await sendActivationLink(newUser.link, newUser.email, 'test');
+                await this.mailService.sendActivationUrl(newUser.email, { activateAccountUrl: `${config.feUrl}/activate/${newUser.link}` });
 
                 return res.json({
                     message: "Na podany adres email został wysłany link aktywacyjny."
