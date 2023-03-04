@@ -1,3 +1,4 @@
+import { Project } from 'src/project/entities/project.entity';
 import { User } from 'src/user/entities/user.entity';
 import { DataSource, DataSourceOptions } from 'typeorm';
 import { config } from '../../../config/config';
@@ -14,6 +15,7 @@ export const connectionSource = new DataSource({
     'dist/**/**.entity{.ts,.js}',
     'dist/**.entity{.ts,.js}',
     User,
+    Project
   ],
   bigNumberStrings: false,
   logging: config.logging,
