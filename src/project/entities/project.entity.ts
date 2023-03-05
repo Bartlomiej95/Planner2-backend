@@ -13,7 +13,7 @@ export class Project extends BaseEntity {
 
     @Column({
         type: 'varchar',
-        length: 50,
+        length: 100,
     })
     customer: string;
 
