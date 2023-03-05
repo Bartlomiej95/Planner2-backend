@@ -1,5 +1,6 @@
-import { Injectable } from '@nestjs/common';
+import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { Response } from 'express';
+import { NotFoundError } from 'rxjs';
 import { validateProjectData } from 'src/common/utils/validate-project';
 import { CreateNewProjectDto } from './dto/create-project.dto';
 import { Project } from './entities/project.entity';
@@ -51,7 +52,7 @@ export class ProjectService {
         }
     }
 
-    async getProject(id: string){
-
+    async getProject(id: string): Promise<Project>{
+        return await Project.findOne({where: {id}});
     }
 }

@@ -1,12 +1,16 @@
 import { Controller, Inject, Get, Param, Post, Body, UseGuards, Res } from '@nestjs/common';
+import { Response } from 'express';
 import { JwtAuthGuard } from 'src/common/guards/jwt-auth.guard';
 import { UserService } from 'src/user/user.service';
 import { ProjectService } from './project.service';
 import { UseRoles } from 'src/common/decorators/roles.decorator';
 import { Role } from 'src/types/user.type';
-import { Request, Response } from 'express';
 import { CreateNewProjectDto } from './dto/create-project.dto';
 import { RolesGuard } from 'src/common/guards/roles.guard';
+import { UserObj } from 'src/common/decorators/user.decorator';
+import { User } from 'src/user/entities/user.entity';
+import { Project } from './entities/project.entity';
+import { UserInProjectGuard } from 'src/common/guards/user-in-project.guard';
 
 @Controller('project')
 export class ProjectController {
@@ -16,10 +20,11 @@ export class ProjectController {
     ) {}
 
     @Get('/:id')
-    @UseGuards(JwtAuthGuard)
+    @UseGuards(JwtAuthGuard, UserInProjectGuard)
+    @UseRoles(Role.manager, Role.owner, Role.user)
     async getProject(
         @Param('id') id: string,
-    ){
+    ): Promise<Project>{
         return await this.projectService.getProject(id)
     }
 
