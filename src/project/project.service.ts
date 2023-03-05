@@ -55,4 +55,53 @@ export class ProjectService {
     async getProject(id: string): Promise<Project>{
         return await Project.findOne({where: {id}});
     }
+
+    async updateProject(id: string, data: CreateNewProjectDto, res: Response) {
+        try {
+
+            const updatedProject = await Project.findOne({where: {id}})
+            if(!updatedProject) throw new NotFoundException('Nie ma takiego projektu');
+
+            const validation = await validateProjectData(data);
+            if(!validation.ok){
+                res.status(500)
+                    .json({ message: validation.message})
+            } 
+
+            updatedProject.assumptions = data.assumptions;
+            updatedProject.content = data.content;
+            updatedProject.customer = data.customer;
+            updatedProject.deadline = data.deadline;
+            updatedProject.departments = data.departments;
+            updatedProject.hours = data.hours;
+            updatedProject.title = data.title;
+            updatedProject.users = data.users;
+            updatedProject.value = data.value;
+
+            await updatedProject.save();
+            
+            res.status(200)
+                .json({ message: `Projekt ${updatedProject.title} został zaktualizowany`})
+            
+        } catch (error) {
+            res.status(500)
+                .json({ message: "Błąd serwera"})
+        }
+    }
+
+    async deleteProject(id: string, res: Response){
+        try {
+            const project = await Project.findOne({ where: { id }});
+            const title = project.title;
+            if(!project) throw new NotFoundException('Nie znaleziono takiego projektu');
+
+            project.remove();
+            res.status(200)
+                .json({ message: `Projekt ${title} został usunięty`});
+            
+        } catch (error) {
+            res.status(500)
+            .json({ message: "Błąd serwera"})
+        }
+    }
 }
