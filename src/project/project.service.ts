@@ -2,6 +2,8 @@ import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/commo
 import { Response } from 'express';
 import { NotFoundError } from 'rxjs';
 import { validateProjectData } from 'src/common/utils/validate-project';
+import { User } from 'src/user/entities/user.entity';
+import { ArrayContains, In } from 'typeorm';
 import { CreateNewProjectDto } from './dto/create-project.dto';
 import { Project } from './entities/project.entity';
 
@@ -11,7 +13,9 @@ export class ProjectService {
 
     async createNewProject(data: CreateNewProjectDto, res: Response): Promise<{ok: boolean, message: string, title: string | null}> {
         try {
+            
             const validation = await validateProjectData(data);
+            console.log(data);
 
             if(!validation.ok){
                 return {
@@ -21,7 +25,6 @@ export class ProjectService {
                 }
             } else {
                 const project = new Project();
-
                 project.assumptions = data.assumptions;
                 project.content = data.content;
                 project.customer = data.customer;
@@ -29,10 +32,12 @@ export class ProjectService {
                 project.departments = data.departments;
                 project.hours = data.hours;
                 project.title = data.title;
-                project.users = data.users;
                 project.value = data.value;
 
-                await project.save();
+                const user = await User.findBy({ id: In([data.users])});
+                project.users = [...user];
+
+                await project.save();            
 
                 res.status(200)
                     .json({
@@ -75,8 +80,10 @@ export class ProjectService {
             updatedProject.departments = data.departments;
             updatedProject.hours = data.hours;
             updatedProject.title = data.title;
-            updatedProject.users = data.users;
             updatedProject.value = data.value;
+
+            const user = await User.findBy({ id: In([data.users])});
+            updatedProject.users.push(...user);
 
             await updatedProject.save();
             

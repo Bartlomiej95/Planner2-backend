@@ -1,5 +1,6 @@
+import { Project } from "src/project/entities/project.entity";
 import { Position, Role } from "src/types/user.type";
-import { BaseEntity, Entity, PrimaryGeneratedColumn, Column, Index } from "typeorm";
+import { BaseEntity, Entity, PrimaryGeneratedColumn, Column, Index, ManyToMany, JoinTable } from "typeorm";
 
 @Entity()
 export class User extends BaseEntity {
@@ -75,10 +76,12 @@ export class User extends BaseEntity {
       })
       role: Role;
       
-      @Column({
-        type: 'varchar',
-      })
-      projects: string[];
+      // @Column({
+      //   type: 'varchar',
+      // })
+      @ManyToMany(() => Project, (project) => project.users )
+      @JoinTable()
+      projects: Project[];
   
       @Column({
         type: 'varchar',

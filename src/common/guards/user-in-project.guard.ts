@@ -24,7 +24,7 @@ export class UserInProjectGuard implements CanActivate {
     const project = await Project.findOne({ where: {id: projectId}});
     console.log(project);
 
-    return project.users.includes(user.id);
+    return project.users.includes(user);
 
   }
 }

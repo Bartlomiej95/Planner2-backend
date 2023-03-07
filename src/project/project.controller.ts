@@ -44,7 +44,7 @@ export class ProjectController {
         @Res() res: Response,
         @Param('id') id: string,
     ){
-        return await this.projectService.updateProject(id, data, res)
+        // return await this.projectService.updateProject(id, data, res)
     }
 
     @Delete('/:id')
