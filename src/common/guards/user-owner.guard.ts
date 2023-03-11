@@ -1,5 +1,6 @@
 import { Injectable, CanActivate, ExecutionContext, Inject, BadRequestException } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
+import { Role } from 'src/types/user.type';
 import { User } from 'src/user/entities/user.entity';
 
 @Injectable()
@@ -14,6 +15,8 @@ export class UserOwnerGuard implements CanActivate {
     
     if(!ownerId) throw new BadRequestException();
     if(!user) throw new Error('User is undefined');
+
+    (user.role === Role.manager || user.role === Role.owner) ? true : false
 
     return user.id === ownerId
 
