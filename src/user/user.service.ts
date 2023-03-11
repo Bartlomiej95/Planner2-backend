@@ -1,8 +1,11 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { BadRequestException, NotFoundException } from '@nestjs/common/exceptions';
 import { compare } from 'bcrypt';
+import { Response } from 'express';
 import { hashPwd } from 'src/common/utils/hashPwd';
+import { Project } from 'src/project/entities/project.entity';
 import { ChangePasswordResponse } from 'src/types/user.type';
+import { Not, IsNull, In} from 'typeorm';
 import { changePasswordDto } from './dto/change-password.dto';
 import { User } from './entities/user.entity';
 
@@ -38,5 +41,27 @@ export class UserService {
         } else throw new UnauthorizedException();
 
         return { ok: true }
+    }
+
+    async getProjectsForUser(user: User, res: Response){
+        try {
+
+            const projects = await Project.findProjectsByUser(user.id);
+
+            if(projects.length === 0){
+                res.json({msg: "Nie masz żadnych projektów"});
+            }
+
+            const searchingProjects = await Project.find({ where: { id: In([projects])}})
+
+            res.status(200)
+                .json({
+                    projects: searchingProjects,
+                });
+
+        } catch (error) {
+            res.status(500)
+                .json('Błąd serwera');
+        }
     }
 }

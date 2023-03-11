@@ -58,4 +58,20 @@ export class Project extends BaseEntity {
         type: 'varchar',
     })
     departments: string[];
+
+    static async findProjectsByUser(userId: string) {
+
+        const result = await this.createQueryBuilder('project')
+            .leftJoinAndSelect('project.users', 'users')
+            .getMany();
+       
+        const projectsWithUsers = result.filter(project => project.users.length !== 0);
+        const searchingProjects = projectsWithUsers.map(project => {
+            if(project.users.filter(user => user.id === userId)){
+                return project.id;
+            }
+        });
+                
+        return searchingProjects;
+    }
 }

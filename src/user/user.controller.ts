@@ -1,7 +1,9 @@
-import { Controller, Get, Inject, Param, UseGuards, Patch, Body } from '@nestjs/common';
+import { Controller, Get, Inject, Param, UseGuards, Patch, Body, Res} from '@nestjs/common';
+import { Response } from 'express';
+import { UserObj } from 'src/common/decorators/user.decorator';
 import { JwtAuthGuard } from 'src/common/guards/jwt-auth.guard';
 import { UserOwnerGuard } from 'src/common/guards/user-owner.guard';
-import { ChangePasswordResponse } from 'src/types/user.type';
+import { ChangePasswordResponse, Role } from 'src/types/user.type';
 import { changePasswordDto } from './dto/change-password.dto';
 import { User } from './entities/user.entity';
 import { UserService } from './user.service';
@@ -11,6 +13,15 @@ export class UserController {
     constructor(
         @Inject(UserService) private userService: UserService,
     ) {}
+
+    @Get('/projects')
+    @UseGuards(JwtAuthGuard)
+    async getProjectsForUser(
+        @Res() res: Response,
+        @UserObj() user: User,
+    ){
+        return await this.userService.getProjectsForUser(user, res);
+    }
 
     @Get('/:id')
     @UseGuards(JwtAuthGuard, UserOwnerGuard)
