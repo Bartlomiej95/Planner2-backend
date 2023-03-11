@@ -64,4 +64,27 @@ export class UserService {
                 .json('Błąd serwera');
         }
     }
+
+    async showUserProfile (user: User, res: Response) {
+        try {
+            if(!user) throw new NotFoundException();
+
+            const { lastName, firstName, department, position, company  } = user;
+
+            res.status(200)
+                .json({
+                    user: {
+                        lastName,
+                        firstName,
+                        department,
+                        position,
+                        company,
+                    }
+                })
+            
+        } catch (error) {
+            res.status(500)
+                .json('Błąd serwera');
+        }
+    }
 }

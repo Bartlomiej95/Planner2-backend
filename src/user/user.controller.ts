@@ -39,4 +39,13 @@ export class UserController {
     ): Promise<ChangePasswordResponse>{
       return await this.userService.changePassword(id, changePasswordDto)
     }
+
+    @Get('/profile')
+    @UseGuards(JwtAuthGuard, UserOwnerGuard)
+    async getUserProfile(
+      @UserObj() user: User,
+      @Res() res: Response,
+    ) {
+      return await this.userService.showUserProfile(user, res)
+    }
 }

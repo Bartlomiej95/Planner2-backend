@@ -110,5 +110,5 @@ export class User extends BaseEntity {
         type: 'varchar',
         default: null,
       })
-      comapny: string;
+      company: string;
 }
