@@ -21,6 +21,15 @@ export enum Position {
     juniorGraphic = 'Junior Graphic Designer',
     midGraphic = 'Mid Graphic Desinger',
     seniorGraphic = 'Senior Graphic Desinger',
+    adminAssit = 'Administrative Assitant',
+    juniorSales = 'Junior Sales Specialist',
+    midSales = 'Sales Specialist',
+    seniorSales = 'Senior Sales Specialist',
+    brandManager = 'Brand Manager',
+    marketingManager = 'Marketing Manager',
+    socialManager = 'Social Media Manager',
 }
+
+
 
 export type ChangePasswordResponse = { ok: boolean}
