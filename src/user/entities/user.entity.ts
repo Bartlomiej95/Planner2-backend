@@ -1,6 +1,7 @@
 import { Project } from "src/project/entities/project.entity";
+import { Task } from "src/task/entities/task.entity";
 import { Position, Role } from "src/types/user.type";
-import { BaseEntity, Entity, PrimaryGeneratedColumn, Column, Index, ManyToMany, JoinTable } from "typeorm";
+import { BaseEntity, Entity, PrimaryGeneratedColumn, Column, Index, ManyToMany, JoinTable, OneToMany } from "typeorm";
 
 @Entity()
 export class User extends BaseEntity {
@@ -83,10 +84,8 @@ export class User extends BaseEntity {
       @JoinTable()
       projects: Project[];
   
-      @Column({
-        type: 'varchar',
-      })
-      tasks: string[];
+      @OneToMany(() => Task, (task) => task.id)
+      tasks: Task[];
   
       @Column({
         type: 'enum',

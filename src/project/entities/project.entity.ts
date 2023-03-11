@@ -1,5 +1,6 @@
+import { Task } from "src/task/entities/task.entity";
 import { User } from "src/user/entities/user.entity";
-import { BaseEntity, Column, Entity, ManyToMany, PrimaryGeneratedColumn } from "typeorm";
+import { BaseEntity, Column, Entity, ManyToMany, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity('project')
 export class Project extends BaseEntity {
@@ -43,16 +44,11 @@ export class Project extends BaseEntity {
     })
     assumptions: string;
 
-    // @Column({
-    //     type: 'varchar',
-    // })
     @ManyToMany(() => User, (user) => user.projects, { cascade: true })
     users: User[];
 
-    @Column({
-        type: 'varchar',
-    })
-    tasks: string[];
+    @OneToMany(() => Task, (task) => task.id )
+    tasks: Task[];
 
     @Column({
         type: 'varchar',
