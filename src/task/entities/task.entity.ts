@@ -23,7 +23,7 @@ export class Task extends BaseEntity {
         type: 'varchar',
         length: 50
     })
-    string: string;
+    category: string;
 
     @Column()
     halfTimeReport: boolean;
