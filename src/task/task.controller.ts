@@ -53,5 +53,23 @@ export class TaskController {
         return await this.taskService.removeTask(id, res);
     }
 
+    @Patch('/active/:id')
+    @UseGuards(JwtAuthGuard, UserOwnerGuard)
+    async toogleActiveTask(
+        @Param('id') id: string,
+        @Res() res: Response,
+    ){
+        return await this.taskService.toggleActiveStatus(id, res)
+    }
+
+    @Patch('/finish/:id')
+    @UseGuards(JwtAuthGuard, UserOwnerGuard)
+    async finishTask(
+        @Param('id') id: string,
+        @Res() res: Response,
+    ){
+        return await this.taskService.finishTask(id, res)
+    }
+
 
 }

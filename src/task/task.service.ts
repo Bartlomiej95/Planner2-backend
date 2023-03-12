@@ -131,4 +131,44 @@ export class TaskService {
                 .json(error.message)
         }
     }
+
+    async toggleActiveStatus(id: string, res: Response){
+        try {
+            const updatedTask = await Task.findOne({where: { id }});
+            if(!updatedTask) throw new NotFoundException('Nie ma takiego zadania');
+
+            updatedTask.isActive = !updatedTask.isActive;
+
+            await updatedTask.save();
+            res.status(200)
+                .json('Zmieniono status zadania')
+            
+        } catch (error) {
+            res.status(500)
+                .json(error.message)
+        }
+    }
+
+    async finishTask(id: string, res: Response){
+        try {
+            const searchingTask = await Task.findOne({where: { id }});
+            if(!searchingTask) throw new NotFoundException('Nie ma takiego zadania');
+
+            if(searchingTask.isFinish){
+                res.status(400)
+                    .json('Zadanie jest już zakończone. Jeśli chcesz poproś managera aby je otworzył');
+                return;
+            }
+
+            searchingTask.isFinish = true;
+            await searchingTask.save();
+            
+            res.status(200)
+                .json('Pomyślnie zakończono zadanie')
+            
+        } catch (error) {
+            res.status(500)
+                .json(error.message)
+        }
+    }
 }
