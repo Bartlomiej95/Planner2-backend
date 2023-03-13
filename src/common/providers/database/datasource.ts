@@ -1,3 +1,5 @@
+import { CompanyModule } from 'src/company/company.module';
+import { Company } from 'src/company/entities/company.entity';
 import { Project } from 'src/project/entities/project.entity';
 import { Task } from 'src/task/entities/task.entity';
 import { User } from 'src/user/entities/user.entity';
@@ -18,6 +20,7 @@ export const connectionSource = new DataSource({
     User,
     Project,
     Task,
+    Company,
   ],
   bigNumberStrings: false,
   logging: config.logging,

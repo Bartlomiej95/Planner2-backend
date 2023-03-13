@@ -1,7 +1,8 @@
+import { Company } from "src/company/entities/company.entity";
 import { Project } from "src/project/entities/project.entity";
 import { Task } from "src/task/entities/task.entity";
 import { Position, Role } from "src/types/user.type";
-import { BaseEntity, Entity, PrimaryGeneratedColumn, Column, Index, ManyToMany, JoinTable, OneToMany } from "typeorm";
+import { BaseEntity, Entity, PrimaryGeneratedColumn, Column, Index, ManyToMany, JoinTable, OneToMany, ManyToOne } from "typeorm";
 
 @Entity()
 export class User extends BaseEntity {
@@ -105,9 +106,6 @@ export class User extends BaseEntity {
       })
       loggedIn: boolean;
 
-      @Column({
-        type: 'varchar',
-        default: null,
-      })
-      company: string;
+      @ManyToOne(() => Company, (company => company.name))
+      company: Company;
 }
