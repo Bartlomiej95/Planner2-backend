@@ -11,6 +11,7 @@ import { RegistrationDto } from './dto/registration.dto';
 import { randomSigns } from 'src/common/utils/random-signs';
 import { hashPwd } from 'src/common/utils/hashPwd';
 import { MailService } from 'src/common/providers/mail/mail.service';
+import { Company } from 'src/company/entities/company.entity';
 
 @Injectable()
 export class AuthService {
@@ -88,6 +89,13 @@ export class AuthService {
                 })
             }
 
+            if(result.isActive){
+                return res.json({
+                    actionStatus: false,
+                    message: 'Ten użytkownik ma już aktywne konto!',
+                })
+            }
+
             if (result.link !== data.urlCode) {
                 return res.json({
                     actionStatus: false,
@@ -101,10 +109,33 @@ export class AuthService {
                     message: 'Hasło jest za krótkie',
                 })
             }
+
+            if(!data.firstName || !data.lastName){
+                return res.json({
+                    actionStatus: false,
+                    message: 'Podaj imię i nazwisko',
+                })
+            }
             
             result.link = null;
             result.isActive = true;
             result.password = await hashPwd(data.password);
+            result.firstName = data.firstName;
+            result.lastName = data.lastName;
+            result.position = data.position;
+            
+            if(data.ifUserHasCompany){
+                const company = await Company.findOne({ where: { name: data.company } })
+                result.company = company;
+            } else {
+                const newCompany = Company.create();
+                newCompany.name = data.company;
+                newCompany.nip = data.nip;
+                // zrób walidacje do nip
+                newCompany.administrator = result;
+                result.company = newCompany;
+                await newCompany.save();
+            }
 
             await result.save();
 
