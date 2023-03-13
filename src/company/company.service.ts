@@ -12,6 +12,7 @@ export class CompanyService {
         try {
             const searchCompany = await Company.findOne({ where: [{ name: data.name}, { nip: data.nip } ]});
             if(searchCompany){
+                res.status(401).json('Taka firma już istnieje');
                 throw new Error(`Taka firma już istnieje`);
             }
 
@@ -32,6 +33,14 @@ export class CompanyService {
         } catch (error) {
             res.status(500)
                 .json({ error })
+        }
+    }
+
+    async showAllCompanies(){
+        try {
+            return await Company.find();
+        } catch (error) {
+            throw new Error(error)
         }
     }
 }

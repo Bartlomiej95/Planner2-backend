@@ -1,5 +1,5 @@
 import { Controller } from '@nestjs/common';
-import { Body, Inject, Post, Res } from '@nestjs/common/decorators';
+import { Body, Inject, Post, Res, Get } from '@nestjs/common/decorators';
 import { Response } from 'express';
 import { UserObj } from 'src/common/decorators/user.decorator';
 import { User } from 'src/user/entities/user.entity';
@@ -19,5 +19,10 @@ export class CompanyController {
         @Res() res: Response,
     ){
         return await this.companyService.createNewCompany(user, data, res )
+    }
+
+    @Get('/all')
+    async getAllCompanies(){
+        return await this.companyService.showAllCompanies();
     }
 }
