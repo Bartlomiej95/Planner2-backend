@@ -1,5 +1,5 @@
-import { Controller, Post, Res, Inject, UseGuards, Body, Delete, Param } from '@nestjs/common';
-import { Response } from 'express';
+import { Controller, Post, Res, Inject, UseGuards, Body, Delete, Req } from '@nestjs/common';
+import { Request, Response } from 'express';
 import { AuthGuard } from '@nestjs/passport';
 import { UserService } from 'src/user/user.service';
 import { AuthService } from './auth.service';
@@ -18,12 +18,11 @@ export class AuthController {
     ){}
 
     @Post('/login')
-    @UseGuards(AuthGuard('local'))
     async login(
         @Res({ passthrough: true }) res: Response,
-        @UserObj() user: User,
+        @Req() req: Request,
     ) {
-        return this.authService.login(user, res)
+        return this.authService.login(req, res)
     }
 
     @Post('/register')
@@ -36,7 +35,7 @@ export class AuthController {
 
     @Post('/activate')
     async activateUser(
-        @Body() req: ActivationDto,
+        @Body() req: { data: ActivationDto},
         @Res() res: Response,
     ) {
         return await this.authService.activate(req, res );

@@ -1,6 +1,6 @@
 import { Injectable, Inject, NotFoundException } from '@nestjs/common';
 import { compare } from 'bcrypt';
-import { Response } from 'express';
+import { Request, Response } from 'express';
 import { JwtService } from '@nestjs/jwt';
 import { v4 as uuid } from 'uuid';
 import { User } from 'src/user/entities/user.entity';
@@ -11,7 +11,6 @@ import { RegistrationDto } from './dto/registration.dto';
 import { randomSigns } from 'src/common/utils/random-signs';
 import { hashPwd } from 'src/common/utils/hashPwd';
 import { MailService } from 'src/common/providers/mail/mail.service';
-import { Company } from 'src/company/entities/company.entity';
 
 @Injectable()
 export class AuthService {
@@ -32,6 +31,8 @@ export class AuthService {
             if(hashCompareResult){
                 return user;
             }
+        } else {
+            return 
         }
 
         return null
@@ -56,36 +57,57 @@ export class AuthService {
         return newJwtId;
       }
 
-    async login(user: User, res: Response){
-        console.log(user);
-        user.jwtId = await this.generateNewJwtId();
-        await user.save();
+    async login(req: Request, res: Response){
+        const { email, password } = req.body;
+        
+        const searchedUser = await User.findOne({ where: { email }});
+        console.log(searchedUser);
+        if(!searchedUser){
+            res.json({message: "Taki użytkownik nie istnieje"});    
+            return;
+        } else {
+            if(searchedUser.isActive){
+                const hashCompareResult = await compare(password, searchedUser.password);
+    
+                if(!hashCompareResult){
+                    res.json({message: "Nieprawidłowe hasło"});
+                    return;
+                }
+            } else {
+                res.json({message: "Konto jest nieaktywne"});
+                return;
+            }
+        }
 
-        const payload = { jwtId: user.jwtId };
+
+        searchedUser.jwtId = await this.generateNewJwtId();
+        await searchedUser.save();
+
+        const payload = { jwtId: searchedUser.jwtId };
         console.log(payload);
 
         res.cookie('access_token', this.jwtService.sign(payload), {
             secure: false,
             httpOnly: true,
             maxAge: config.jwtCookieTimeToExpire,
-          });
+          }).send();
       
-        return user;
+        return searchedUser;
     }
 
-    async activate(data: ActivationDto, res: Response){
+    async activate(req: { data: ActivationDto }, res: Response){
         try {
-            
+            const data: ActivationDto = req.data;
             const result = await User.findOne({
                 where: {
-                    email: data.email
+                    link: data.urlCode,
                 }
             })
 
             if (!result) {
                 return res.json({
                     actionStatus: false,
-                    message: 'Użytkownik o podanym adresie email nie istnieje',
+                    message: 'Niepoprawny link aktywacyjny',
                 })
             }
 
@@ -124,19 +146,6 @@ export class AuthService {
             result.lastName = data.lastName;
             result.position = data.position;
             
-            if(data.ifUserHasCompany){
-                const company = await Company.findOne({ where: { name: data.company } })
-                result.company = company;
-            } else {
-                const newCompany = Company.create();
-                newCompany.name = data.company;
-                newCompany.nip = data.nip;
-                // zrób walidacje do nip
-                newCompany.administrator = result;
-                result.company = newCompany;
-                await newCompany.save();
-            }
-
             await result.save();
 
             res.json({
