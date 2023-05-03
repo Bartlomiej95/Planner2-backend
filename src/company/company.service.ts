@@ -8,18 +8,26 @@ import { Company } from './entities/company.entity';
 export class CompanyService {
     constructor(){}
 
-    async createNewCompany(user: User, data: CreateCompanyDto, res: Response){
+    async createNewCompany(data: CreateCompanyDto, res: Response){
         try {
+            console.log(data);
             const searchCompany = await Company.findOne({ where: [{ name: data.name}, { nip: data.nip } ]});
             if(searchCompany){
                 res.status(401).json('Taka firma już istnieje');
-                throw new Error(`Taka firma już istnieje`);
+            };
+
+            const searchUser = await User.findOne({ where: {link: data.urlCode}});
+            console.log("searchUser", searchUser);
+            if(!searchUser){
+                console.log('hellls')
+                res.status(404).json('Nie ma takiego użytkownika');
             }
 
             const newCompany = Company.create();
             newCompany.name = data.name;
             newCompany.nip = data.nip;
-            newCompany.administrator = user;
+            newCompany.administrator = searchUser;
+            console.log(newCompany);
 
             await newCompany.save();
 

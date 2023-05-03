@@ -14,7 +14,7 @@ export class Company extends BaseEntity {
     name: string;
 
     @Column({
-        type: 'int',
+        type: 'bigint',
         unique: true,
     })
     nip: number;
