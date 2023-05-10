@@ -108,4 +108,20 @@ export class User extends BaseEntity {
 
       @ManyToOne(() => Company, (company => company.name))
       company: Company;
+
+      static async findUsersByCompany(companyId: string) {
+
+        const results = await this.createQueryBuilder('users')
+            .leftJoinAndSelect('users.company', 'company')
+            .getMany();
+
+        const usersWithCompany = results.filter(users => users.company);
+        const searchedUsers = usersWithCompany.map(users => {
+            if(users.company.id === companyId){
+              return users;
+            }
+        }).filter(item => item);
+                
+        return searchedUsers;
+    }
 }

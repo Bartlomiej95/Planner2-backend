@@ -51,4 +51,16 @@ export class CompanyService {
             throw new Error(error)
         }
     }
+
+    async getUsersFromCompany(user: User, res: Response){
+        try {
+            const userWithRelation = await User.findOne({ where: { id: user.id}, relations: { company: true }});
+            const searchedCompanyId = userWithRelation.company.id;
+            const searchedUsers = await User.findUsersByCompany(searchedCompanyId);
+            
+            return res.json(searchedUsers);
+        } catch (error) {
+            throw new Error(error)
+        }
+    }
 }

@@ -90,7 +90,7 @@ export class AuthService {
             secure: false,
             httpOnly: true,
             maxAge: config.jwtCookieTimeToExpire,
-          }).send();
+          });
       
         return searchedUser;
     }

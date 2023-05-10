@@ -13,6 +13,14 @@ export class UserController {
     constructor(
         @Inject(UserService) private userService: UserService,
     ) {}
+    
+    @Get('/')
+    @UseGuards(JwtAuthGuard, UserOwnerGuard)
+    async getUser(
+      @UserObj() user
+    ): Promise<User> {
+      return this.userService.getUser(user)
+    }
 
     @Get('/projects')
     @UseGuards(JwtAuthGuard)
@@ -21,14 +29,6 @@ export class UserController {
         @UserObj() user: User,
     ){
         return await this.userService.getProjectsForUser(user, res);
-    }
-
-    @Get('/:id')
-    @UseGuards(JwtAuthGuard, UserOwnerGuard)
-    async getUser(
-      @Param('id') id: string
-    ): Promise<User> {
-      return this.userService.getUser(id)
     }
 
     @Patch('/:id/password')
