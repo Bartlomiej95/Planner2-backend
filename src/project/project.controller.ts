@@ -9,6 +9,8 @@ import { CreateNewProjectDto } from './dto/create-project.dto';
 import { RolesGuard } from 'src/common/guards/roles.guard';
 import { Project } from './entities/project.entity';
 import { UserInProjectGuard } from 'src/common/guards/user-in-project.guard';
+import { UserObj } from 'src/common/decorators/user.decorator';
+import { User } from 'src/user/entities/user.entity';
 
 @Controller('project')
 export class ProjectController {
@@ -31,9 +33,10 @@ export class ProjectController {
     @UseRoles(Role.manager, Role.owner)
     async createNewProject(
         @Body() data: CreateNewProjectDto,
+        @UserObj() user: User,
         @Res() res: Response,
     ): Promise<{ ok: boolean, message: string, title: string | null}> {
-        return await this.projectService.createNewProject(data, res)
+        return await this.projectService.createNewProject(data, user, res)
     }
 
     @Patch('/:id')

@@ -1,3 +1,4 @@
+import { Project } from "src/project/entities/project.entity";
 import { User } from "src/user/entities/user.entity";
 import { BaseEntity, Column, Entity, JoinColumn, OneToMany, OneToOne, PrimaryGeneratedColumn, Unique } from "typeorm";
 
@@ -25,5 +26,8 @@ export class Company extends BaseEntity {
 
     @OneToMany(() => User, (user) => user.id)
     users: User[];
+
+    @OneToMany(() => Project, (project) => project.id)
+    projects: Project[];
 
 }

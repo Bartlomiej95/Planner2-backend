@@ -6,23 +6,41 @@ import { User } from 'src/user/entities/user.entity';
 import { ArrayContains, In } from 'typeorm';
 import { CreateNewProjectDto } from './dto/create-project.dto';
 import { Project } from './entities/project.entity';
+import { Company } from 'src/company/entities/company.entity';
 
 @Injectable()
 export class ProjectService {
     constructor(){}
 
-    async createNewProject(data: CreateNewProjectDto, res: Response): Promise<{ok: boolean, message: string, title: string | null}> {
+    async createNewProject(data: CreateNewProjectDto, user: User,  res: Response): Promise<{ok: boolean, message: string, title: string | null}> {
         try {
             
             const validation = await validateProjectData(data);
-            console.log(data);
+
+            const userExtendCompany = await User.extendUserCompany(user.id);
+            const companyId = userExtendCompany.company.id;
+            const searchedCompany = await Company.findOne({ where: { id: companyId }});
+
+            if(!searchedCompany){
+                res.json({
+                    ok: false,
+                    message: "Musisz należeć do jakiejś grupy żeby założyć projekt",
+                    title: '',
+                });
+
+                return {
+                    ok: false,
+                    message: "Musisz należeć do jakiejś grupy żeby założyć projekt",
+                    title: '',
+                }
+            }
 
             if(!validation.ok){
-                return {
+                res.json({
                     ok: validation.ok,
                     message: validation.message,
                     title: validation.title,
-                }
+                })
             } else {
                 const project = new Project();
                 project.assumptions = data.assumptions;
@@ -33,6 +51,7 @@ export class ProjectService {
                 project.hours = data.hours;
                 project.title = data.title;
                 project.value = data.value;
+                project.company = searchedCompany;
 
                 const user = await User.findBy({ id: In([data.users])});
                 project.users = [...user];
@@ -41,7 +60,9 @@ export class ProjectService {
 
                 res.status(200)
                     .json({
-                    message: "Stworzono nowy projekt"
+                        ok: true,
+                        title: project.title,
+                        message: 'Stworzono nowy projekt',
                 });
 
                 return {

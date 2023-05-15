@@ -124,4 +124,13 @@ export class User extends BaseEntity {
                 
         return searchedUsers;
     }
+
+    static async extendUserCompany(userId){
+      const results = await this.createQueryBuilder('users')
+            .leftJoinAndSelect('users.company', 'company')
+            .getOne();
+
+            console.log('szukany rezultat', results);
+            return results;
+    }
 }

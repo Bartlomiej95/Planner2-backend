@@ -1,3 +1,4 @@
+import { Company } from "src/company/entities/company.entity";
 import { Task } from "src/task/entities/task.entity";
 import { User } from "src/user/entities/user.entity";
 import { BaseEntity, Column, Entity, ManyToMany, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
@@ -54,6 +55,9 @@ export class Project extends BaseEntity {
         type: 'varchar',
     })
     departments: string[];
+
+    @ManyToOne(() => Company, (company) => company.id, { cascade: true} )
+    company: Company;
 
     static async findProjectsByUser(userId: string) {
 
