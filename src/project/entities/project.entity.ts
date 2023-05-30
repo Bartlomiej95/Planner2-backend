@@ -74,4 +74,15 @@ export class Project extends BaseEntity {
                 
         return searchingProjects;
     }
+
+    static async findProjectsByCompany(companyId: string){
+        const result = await this.createQueryBuilder('project')
+            .leftJoinAndSelect('project.company', 'company')
+            .leftJoinAndSelect('project.users', 'users')
+            .getMany();
+        
+        const projectsWithCompany = result.filter(project => project.company).filter(project => project.company.id === companyId);
+
+        return projectsWithCompany;
+    }
 }

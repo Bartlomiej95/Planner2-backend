@@ -130,7 +130,6 @@ export class User extends BaseEntity {
             .leftJoinAndSelect('users.company', 'company')
             .getOne();
 
-            console.log('szukany rezultat', results);
             return results;
     }
 }

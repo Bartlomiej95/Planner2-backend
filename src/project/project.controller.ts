@@ -19,6 +19,16 @@ export class ProjectController {
         @Inject(ProjectService) private projectService: ProjectService,
     ) {}
 
+    @Get('/all')
+    @UseGuards(JwtAuthGuard)
+    @UseRoles(Role.manager, Role.owner)
+    async fetchAllProjects(
+        @UserObj() user: User,
+        @Res() res: Response,
+    ){
+        return await this.projectService.fetchAllProjects(user, res);
+    }
+
     @Get('/:id')
     @UseGuards(JwtAuthGuard, UserInProjectGuard)
     @UseRoles(Role.manager, Role.owner, Role.user)

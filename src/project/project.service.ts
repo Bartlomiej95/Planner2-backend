@@ -132,4 +132,20 @@ export class ProjectService {
             .json({ message: "Błąd serwera"})
         }
     }
+
+    async fetchAllProjects(user: User, res: Response){
+        try {
+            const userExtendCompany = await User.extendUserCompany(user.id);
+            const companyId = userExtendCompany.company.id;
+
+            if(!companyId) throw new NotFoundException("Musisz należeć do jakiejś grupy żeby założyć projekt");
+
+            const projects = await Project.findProjectsByCompany(companyId);
+            return res.json({projects})
+            
+            
+        } catch (error) {
+            res.status(500).json({ message: "Błąd serwera" })
+        }
+    }
 }
