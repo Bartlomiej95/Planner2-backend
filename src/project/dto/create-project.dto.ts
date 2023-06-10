@@ -10,3 +10,7 @@ export class CreateNewProjectDto {
     tasks: string[] | [];
     departments: string[] | [];
 }
+
+export class UpdateProjectDto extends CreateNewProjectDto {
+    id: string;
+}
