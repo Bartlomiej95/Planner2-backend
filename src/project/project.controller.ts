@@ -5,7 +5,7 @@ import { UserService } from 'src/user/user.service';
 import { ProjectService } from './project.service';
 import { UseRoles } from 'src/common/decorators/roles.decorator';
 import { Role } from 'src/types/user.type';
-import { CreateNewProjectDto } from './dto/create-project.dto';
+import { CreateNewProjectDto, UpdateProjectDto } from './dto/create-project.dto';
 import { RolesGuard } from 'src/common/guards/roles.guard';
 import { Project } from './entities/project.entity';
 import { UserInProjectGuard } from 'src/common/guards/user-in-project.guard';
@@ -49,15 +49,14 @@ export class ProjectController {
         return await this.projectService.createNewProject(data, user, res)
     }
 
-    @Patch('/:id')
+    @Patch('/')
     @UseGuards(JwtAuthGuard)
     @UseRoles(Role.manager, Role.owner)
     async updateProject(
-        @Body() data: Project,
+        @Body() data: UpdateProjectDto,
         @Res() res: Response,
-        @Param('id') id: string,
     ){
-        // return await this.projectService.updateProject(id, data, res)
+        return await this.projectService.updateProject(data, res);
     }
 
     @Delete('/:id')

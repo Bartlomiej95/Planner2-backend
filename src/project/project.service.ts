@@ -4,7 +4,7 @@ import { NotFoundError } from 'rxjs';
 import { validateProjectData } from 'src/common/utils/validate-project';
 import { User } from 'src/user/entities/user.entity';
 import { ArrayContains, In } from 'typeorm';
-import { CreateNewProjectDto } from './dto/create-project.dto';
+import { CreateNewProjectDto, UpdateProjectDto } from './dto/create-project.dto';
 import { Project } from './entities/project.entity';
 import { Company } from 'src/company/entities/company.entity';
 
@@ -82,16 +82,17 @@ export class ProjectService {
         return await Project.findOne({where: {id}});
     }
 
-    async updateProject(id: string, data: CreateNewProjectDto, res: Response) {
+    async updateProject(data: UpdateProjectDto, res: Response) {
         try {
-
-            const updatedProject = await Project.findOne({where: {id}})
+            const { id } = data;
+            if(!id) throw new NotFoundException("Nie ma takiego projektu");
+            const updatedProject = await Project.findOne({where: {id}});
             if(!updatedProject) throw new NotFoundException('Nie ma takiego projektu');
 
             const validation = await validateProjectData(data);
             if(!validation.ok){
-                res.status(500)
-                    .json({ message: validation.message})
+                return res.status(500)
+                    .json({ message: validation.message, ok: false})
             } 
 
             updatedProject.assumptions = data.assumptions;
@@ -103,17 +104,29 @@ export class ProjectService {
             updatedProject.title = data.title;
             updatedProject.value = data.value;
 
-            const user = await User.findBy({ id: In([data.users])});
-            updatedProject.users.push(...user);
+            console.log('po update', updatedProject);
+            const searchedUsers = [];
+
+            for(let i = 0; i < data.users.length; i++ ) {
+                const user = await User.findBy({ id: In([data.users[i]])});
+                console.log(user);
+                searchedUsers.push(...user);
+            }
+            updatedProject.users = searchedUsers;
+
+            console.log('po dodaniu userów', updatedProject);
 
             await updatedProject.save();
             
-            res.status(200)
-                .json({ message: `Projekt ${updatedProject.title} został zaktualizowany`})
+            return res.status(200)
+                .json({ 
+                    message: `Projekt ${updatedProject.title} został zaktualizowany`,
+                    ok: true
+                })
             
         } catch (error) {
             res.status(500)
-                .json({ message: "Błąd serwera"})
+                .json({ message: error.message ?? "Błąd serwera", ok: false})
         }
     }
 
