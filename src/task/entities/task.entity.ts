@@ -20,15 +20,6 @@ export class Task extends BaseEntity {
     brief: string;
 
     @Column({
-        type: 'varchar',
-        length: 50
-    })
-    category: string;
-
-    @Column()
-    halfTimeReport: boolean;
-
-    @Column({
         type: 'text',
     })
     guidelines: string;
