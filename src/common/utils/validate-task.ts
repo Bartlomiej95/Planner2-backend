@@ -1,7 +1,8 @@
 import { CreateNewTaskDto } from "src/task/dto/create-task.dto";
 
 export async function validateTaskData(data: CreateNewTaskDto): Promise<{ ok: boolean, message: string, title: string | null}> {
-    if(!data.title || !data.brief || !data.category || !data.project || !data.taskTime || !data.user){
+    console.log(data);
+    if(!data.title || !data.brief || !data.project || !data.taskTime || !data.user){
         return {
             ok: false,
             message: "Nie podano wszystkich danych",

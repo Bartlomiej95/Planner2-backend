@@ -35,6 +35,7 @@ export class TaskService {
                         ok: validate.ok,
                         message: validate.message,
                         title: validate.title,
+                        task: null,
                     })
                 return null;
             }
@@ -48,10 +49,9 @@ export class TaskService {
             const newTask = new Task();
             newTask.title = task.title;
             newTask.brief = task.brief;
-            newTask.category = task.category;
             newTask.currentTime = 0;
+            newTask.taskTime = task.taskTime;
             newTask.guidelines = task.guidelines;
-            newTask.halfTimeReport = task.halfTimeReport;
             newTask.isActive = false;
             newTask.isFinish = false;
             newTask.project = project;
@@ -64,6 +64,7 @@ export class TaskService {
                     ok: true,
                     message: `Dodano nowe zadanie ${newTask.title} do użytkownika ${user.firstName} ${user.lastName}`,
                     title: newTask.title,
+                    task,
                 })
             
         } catch (error) {
@@ -92,10 +93,8 @@ export class TaskService {
 
             updatedTask.title = task.title;
             updatedTask.brief = task.brief;
-            updatedTask.category = task.category;
             updatedTask.currentTime = task.currentTime;
             updatedTask.guidelines = task.guidelines;
-            updatedTask.halfTimeReport = task.halfTimeReport;
             updatedTask.project = project;
             updatedTask.user = user;
 
