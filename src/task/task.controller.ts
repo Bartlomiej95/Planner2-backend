@@ -7,12 +7,23 @@ import { Role } from 'src/types/user.type';
 import { CreateNewTaskDto } from './dto/create-task.dto';
 import { UpdateTaskDto } from './dto/update-task.dto';
 import { TaskService } from './task.service';
+import { UserObj } from 'src/common/decorators/user.decorator';
+import { User } from 'src/user/entities/user.entity';
 
 @Controller('task')
 export class TaskController {
     constructor(
         @Inject(TaskService) private taskService: TaskService,
     ) {}
+
+    @Get('/all')
+    @UseGuards(JwtAuthGuard)
+    async fetchAllTasks(
+        @UserObj() user: User,
+        @Res() res: Response,
+    ){
+        return await this.taskService.getAllTasks(user, res);
+    }
 
     @Get('/:id')
     @UseGuards(JwtAuthGuard, UserOwnerGuard)

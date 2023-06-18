@@ -41,7 +41,7 @@ export class TaskService {
             }
 
             const project = await Project.findOne({ where: { id: task.project} });
-            const user = await User.findOne({ where: { id: task.user }});
+            const user = await User.findOne({ where: { id: task.user }, relations: { company: true }});
 
             if(!project) throw new NotFoundException('Zadanie musi być przypisane do konkretnego projektu!');
             if(!user) throw new NotFoundException('Musisz wyznaczyć osobę do tego zadania');
@@ -56,6 +56,7 @@ export class TaskService {
             newTask.isFinish = false;
             newTask.project = project;
             newTask.user = user;
+            newTask.company = user.company;
 
             await newTask.save();
 
@@ -168,6 +169,19 @@ export class TaskService {
         } catch (error) {
             res.status(500)
                 .json(error.message)
+        }
+    }
+
+    async getAllTasks(user: User, res: Response){
+        try {
+            const extendUser = await User.extendUserCompany(user.id);
+            const tasks = await Task.findTasksForCompany(extendUser.company.id);
+            
+            return res.status(200).json({ tasks });
+
+        } catch (error) {
+            res.status(500)
+                .json(error.message);
         }
     }
 }

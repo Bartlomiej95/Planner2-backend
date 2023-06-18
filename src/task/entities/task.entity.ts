@@ -1,8 +1,9 @@
+import { Company } from "src/company/entities/company.entity";
 import { Project } from "src/project/entities/project.entity";
 import { User } from "src/user/entities/user.entity";
 import { BaseEntity, Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 
-@Entity('tasks')
+@Entity('task')
 export class Task extends BaseEntity {
     @PrimaryGeneratedColumn('uuid')
     id: string;
@@ -45,4 +46,18 @@ export class Task extends BaseEntity {
 
     @ManyToOne(() => User, (user) => user.id)
     user: User;
+
+    @ManyToOne(() => Company,(company) => company.id)
+    company: Company;
+
+    static async findTasksForCompany(companyId: string){
+        const result = await this.createQueryBuilder('task')
+        .leftJoinAndSelect('task.company', 'company')
+        .getMany();
+    
+    const searchedTasks = result.filter(task => task.company).filter(task => task.company.id === companyId);
+
+    return searchedTasks;
+    }
 }
+
