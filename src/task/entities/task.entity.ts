@@ -41,6 +41,9 @@ export class Task extends BaseEntity {
     @Column()
     isFinish: boolean;
 
+    @Column({ type: 'bigint'})
+    startTime: number;
+
     @ManyToOne(() => Project, (project) => project.id)
     project: Project;
 
