@@ -137,11 +137,21 @@ export class TaskService {
             const updatedTask = await Task.findOne({where: { id }});
             if(!updatedTask) throw new NotFoundException('Nie ma takiego zadania');
 
-            updatedTask.isActive = !updatedTask.isActive;
+            if(updatedTask.isActive){
+                const countingTime = Date.now();
+                const searchedTime = Math.round((countingTime - updatedTask.startTime)/ 100000 * 60);
+                updatedTask.currentTime = updatedTask.currentTime + searchedTime;
+                updatedTask.startTime = 0;
+                updatedTask.isActive = false;
+            } else {
+                updatedTask.isActive = !updatedTask.isActive;
+                const startingCountTime = Date.now();
+                updatedTask.startTime = startingCountTime;
+            }
 
             await updatedTask.save();
             res.status(200)
-                .json('Zmieniono status zadania')
+                .json({ message: "Zmieniono status zadania", task: updatedTask });
             
         } catch (error) {
             res.status(500)
@@ -155,16 +165,29 @@ export class TaskService {
             if(!searchingTask) throw new NotFoundException('Nie ma takiego zadania');
 
             if(searchingTask.isFinish){
-                res.status(400)
-                    .json('Zadanie jest już zakończone. Jeśli chcesz poproś managera aby je otworzył');
-                return;
+                return res.status(400)
+                    .json({ 
+                        ok: false,
+                        message: 'Zadanie jest już zakończone. Jeśli chcesz poproś managera aby je otworzył',
+                    });
+            }
+
+            if(searchingTask.isActive){
+                return res.status(400)
+                    .json({ 
+                        ok: false,
+                        message: "Nie można zakończyć aktywnego zadania",
+                    });
             }
 
             searchingTask.isFinish = true;
             await searchingTask.save();
             
             res.status(200)
-                .json('Pomyślnie zakończono zadanie')
+                .json({ 
+                    ok: true,
+                    message: 'Pomyślnie zakończono zadanie', 
+                });
             
         } catch (error) {
             res.status(500)

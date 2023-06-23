@@ -45,7 +45,7 @@ export class TaskController {
     }
 
     @Patch('/:id')
-    @UseGuards(JwtAuthGuard, UserOwnerGuard)
+    @UseGuards(JwtAuthGuard)
     async updateTask(
         @Param('id') id: string,
         @Body() task: UpdateTaskDto,
@@ -65,7 +65,7 @@ export class TaskController {
     }
 
     @Patch('/active/:id')
-    @UseGuards(JwtAuthGuard, UserOwnerGuard)
+    @UseGuards(JwtAuthGuard)
     async toogleActiveTask(
         @Param('id') id: string,
         @Res() res: Response,
@@ -74,12 +74,12 @@ export class TaskController {
     }
 
     @Patch('/finish/:id')
-    @UseGuards(JwtAuthGuard, UserOwnerGuard)
+    @UseGuards(JwtAuthGuard)
     async finishTask(
         @Param('id') id: string,
         @Res() res: Response,
     ){
-        return await this.taskService.finishTask(id, res)
+        return await this.taskService.finishTask(id, res);
     }
 
 
