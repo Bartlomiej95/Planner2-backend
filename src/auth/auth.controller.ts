@@ -1,4 +1,4 @@
-import { Controller, Post, Res, Inject, UseGuards, Body, Delete, Req } from '@nestjs/common';
+import { Controller, Post, Res, Inject, UseGuards, Body, Delete, Req, Put } from '@nestjs/common';
 import { Request, Response } from 'express';
 import { AuthGuard } from '@nestjs/passport';
 import { UserService } from 'src/user/user.service';
@@ -51,10 +51,10 @@ export class AuthController {
         return this.authService.logout(user, res);
     }
 
-    @Delete('/password')
+    @Put('/password')
     async resetPassword(
         @Body() data: { email: string }
     ): Promise<{message: string}>{
         return this.authService.resetPassword(data)
-    }
+    };
 }

@@ -31,13 +31,14 @@ export class UserController {
         return await this.userService.getProjectsForUser(user, res);
     }
 
-    @Patch('/:id/password')
-    @UseGuards(JwtAuthGuard, UserOwnerGuard)
+    @Patch('/changepass')
+    @UseGuards(JwtAuthGuard)
     async changePassword(
-      @Param('id') id: string,
-      @Body() changePasswordDto: changePasswordDto
-    ): Promise<ChangePasswordResponse>{
-      return await this.userService.changePassword(id, changePasswordDto)
+      @UserObj() user: User,
+      @Body() changePasswordDto: changePasswordDto,
+      @Res() res: Response,
+    ) {
+      return await this.userService.changePassword(user, changePasswordDto, res)
     }
 
     @Get('/profile')
