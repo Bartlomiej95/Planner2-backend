@@ -1,6 +1,5 @@
 import { Controller, Post, Res, Inject, UseGuards, Body, Delete, Req, Put } from '@nestjs/common';
 import { Request, Response } from 'express';
-import { AuthGuard } from '@nestjs/passport';
 import { UserService } from 'src/user/user.service';
 import { AuthService } from './auth.service';
 import { UserObj } from 'src/common/decorators/user.decorator';
@@ -8,6 +7,7 @@ import { User } from 'src/user/entities/user.entity';
 import { RegistrationDto } from './dto/registration.dto';
 import { ActivationDto } from './dto/activation.dto';
 import { JwtAuthGuard } from 'src/common/guards/jwt-auth.guard';
+import { ResetPasswordDto } from './dto/reset-password.dto';
 
 @Controller('')
 export class AuthController {
@@ -53,8 +53,17 @@ export class AuthController {
 
     @Put('/password')
     async resetPassword(
-        @Body() data: { email: string }
-    ): Promise<{message: string}>{
-        return this.authService.resetPassword(data)
+        @Body() data: string,
+        @Res() res: Response,
+    ) {
+        return this.authService.resetPassword(data, res)
+    };
+
+    @Put('/password/restart')
+    async newPasswordAfterRestart(
+        @Body() data: ResetPasswordDto,
+        @Res() res: Response,
+    ){
+        return this.authService.setNewPassAfterRestart(data, res)
     };
 }

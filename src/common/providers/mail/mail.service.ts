@@ -2,7 +2,7 @@ import { Inject, Injectable } from '@nestjs/common';
 import { MailerService } from '@nestjs-modules/mailer';
 
 interface ForgotPasswordContext {
-    url: string;
+    forgotPasswordUrl: string;
 }
 
 interface ActivateUrlContext {

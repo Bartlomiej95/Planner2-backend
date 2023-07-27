@@ -8,7 +8,7 @@ export const config = {
     synchronize: true,
     mailPassword: 'admin123',
     mailUsername: 'admin',
-    feUrl: 'http://localhost:3001',
+    feUrl: 'http://localhost:3000',
     jwtSecret: 'djkaslhd767l@$#',
     jwtTimeToExpire: '1y',
     jwtCookieTimeToExpire: 1000 * 60 * 60 * 24 * 365, //1y

@@ -11,6 +11,8 @@ import { RegistrationDto } from './dto/registration.dto';
 import { randomSigns } from 'src/common/utils/random-signs';
 import { hashPwd } from 'src/common/utils/hashPwd';
 import { MailService } from 'src/common/providers/mail/mail.service';
+import { ResetPasswordDto } from './dto/reset-password.dto';
+import { validateResetPass } from 'src/common/utils/validate-resetpass';
 
 @Injectable()
 export class AuthService {
@@ -212,13 +214,65 @@ export class AuthService {
         return { ok: true };
     }
 
-    async resetPassword(data: { email: string}): Promise<{ message: string}> {
+    async resetPassword( data: string, res: Response) {
+        try {
+            const inputMail = Object.keys(data)[0];
+            if(!inputMail){
+                return res.status(400).json({
+                    ok: false, 
+                    message: "Mail nie może być pusty",
+                });
+            }
 
-        const user = await User.findOne({ where: {email: data.email}})
+            const user = await User.findOne({ where: { email: inputMail }});
+
         
-        if(user){
-            // funkcja wysyłająca maila
-            return { message: 'Na podany adres email został wysłany link do reaktywacji konta' }
-        } else throw new NotFoundException('Nie ma takiego maila w naszej bazie');
+            if(user){
+                user.link = randomSigns(25);
+                await user.save();
+                await this.mailService.sendForgotPassword(user.email, { forgotPasswordUrl: `${config.feUrl}/restart/${user.link}`} );
+                return res.status(200).json({ ok: true, message: 'Na podany adres email został wysłany link do reaktywacji konta' });
+            } else {
+                return res.status(400).json({ ok: false, message: "Niepoprawny adres email"});
+            };
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    async setNewPassAfterRestart(data: ResetPasswordDto, res: Response){
+        try {
+            const searchedUser = await User.findOne({ where: { link: data.link }});
+            console.log(data);
+            if(!searchedUser){
+                return res.status(400).json({
+                    ok: false,
+                    message: "Link wygasł albo jest niepoprawny. Zrestartuj hasło jeszcze raz",
+                });
+            } 
+
+            const validateRes = validateResetPass(data.password, data.replyPassword);
+            
+            if(!validateRes.ok){
+                return res.status(400).json({
+                    ok: false,
+                    message: validateRes.message,
+                });
+            } 
+
+            searchedUser.link = "",
+            searchedUser.password = await hashPwd(data.password);
+
+            await searchedUser.save();
+
+            return res.status(200).json({
+                ok: true, 
+                message: "Poprawnie zmieniono hasło",
+            })
+
+        } catch (error) {
+            console.log(error);
+            res.status(500).json({ message: "Błąd serwera", error: error});
+        }
     }
 }
