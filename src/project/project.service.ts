@@ -1,9 +1,8 @@
-import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { Response } from 'express';
-import { NotFoundError } from 'rxjs';
 import { validateProjectData } from 'src/common/utils/validate-project';
 import { User } from 'src/user/entities/user.entity';
-import { ArrayContains, In } from 'typeorm';
+import { In } from 'typeorm';
 import { CreateNewProjectDto, UpdateProjectDto } from './dto/create-project.dto';
 import { Project } from './entities/project.entity';
 import { Company } from 'src/company/entities/company.entity';
@@ -78,7 +77,18 @@ export class ProjectService {
         }
     }
 
-    async getProject(id: string): Promise<Project>{
+    async getProject(id: string, res: Response): Promise<Project>{
+        try {
+            const searchedProject = await Project.findOne({ where: { id }});
+            console.log("Szukany projekt", searchedProject);
+
+            res.status(200).json({ ok: true, message: "Poprawnie pobrano projekt", project: searchedProject})
+
+            return searchedProject;
+        } catch (error) {
+            res.status(500)
+                .json({ ok: false, message: "Błąd serwera", project: null})
+        }
         return await Project.findOne({where: {id}});
     }
 
@@ -159,6 +169,28 @@ export class ProjectService {
             
         } catch (error) {
             res.status(500).json({ message: "Błąd serwera" })
+        }
+    }
+
+    async fetchProjectsAssingToUser(userId: string, res: Response){
+        try {
+            if(!userId){
+                return res.status(400).json({
+                    ok: false, 
+                    projects: null,
+                    message: "Nie ma takiego użytkownika",
+                })
+            } else {
+                const searchedProjects = await Project.findProjectsByUser(userId);
+                return res.status(200).json({
+                    ok: true,
+                    projects: searchedProjects,
+                    message: "Załadowano projekty",
+                })
+            }
+
+        } catch (error) {
+            res.status(500).json({ message: "Błąd serwera"});
         }
     }
 }
