@@ -11,5 +11,7 @@ export const config = {
     feUrl: 'http://localhost:3000',
     jwtSecret: 'djkaslhd767l@$#',
     jwtTimeToExpire: '1y',
-    jwtCookieTimeToExpire: 1000 * 60 * 60 * 24 * 365, //1y
+    jwtCookieTimeToExpire: 1000 * 60 * 60 * 24 * 365, //1y,
+    testUser1: "k.wlodarczyk@company.com",
+    testUser2: "z.wojcik@company.com",
 }

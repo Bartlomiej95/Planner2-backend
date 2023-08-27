@@ -217,6 +217,14 @@ export class AuthService {
     async resetPassword( data: string, res: Response) {
         try {
             const inputMail = Object.keys(data)[0];
+
+            if(inputMail === config.testUser1  || inputMail === config.testUser2){
+                return res.json({ 
+                    ok: false,
+                    message: "Funkcja niedostępna dla testowego konta",
+                });
+            }
+
             if(!inputMail){
                 return res.status(400).json({
                     ok: false, 
@@ -225,7 +233,6 @@ export class AuthService {
             }
 
             const user = await User.findOne({ where: { email: inputMail }});
-
         
             if(user){
                 user.link = randomSigns(25);

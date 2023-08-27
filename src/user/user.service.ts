@@ -8,6 +8,8 @@ import { In} from 'typeorm';
 import { changePasswordDto } from './dto/change-password.dto';
 import { User } from './entities/user.entity';
 import { validateChangePassword } from 'src/common/utils/validate-changepass';
+import { config } from 'src/config/config';
+
 
 @Injectable()
 export class UserService {
@@ -24,6 +26,13 @@ export class UserService {
 
     async changePassword(user: User, changePasswordDto: changePasswordDto, res: Response ) {
         if(!user) throw new NotFoundException("Błędny użytkownik");
+
+        if( user.email === config.testUser1  || user.email === config.testUser2){
+            return res.json({ 
+                ok: false,
+                message: "Funkcja niedostępna dla testowego konta",
+            });
+        }
 
         const { password, newPassword, replyNewPassword } = changePasswordDto;
 
