@@ -67,7 +67,7 @@ export class Project extends BaseEntity {
        
         const projectsWithUsers = result.filter(project => project.users.length !== 0);
         const searchingProjects = projectsWithUsers.map(project => {
-            let checkIfExist = false;
+            let checkIfExist = false; 
             project.users.forEach(user => {
                 if(user.id === userId){
                     checkIfExist = true;

@@ -79,8 +79,7 @@ export class ProjectService {
 
     async getProject(id: string, res: Response): Promise<Project>{
         try {
-            const searchedProject = await Project.findOne({ where: { id }});
-            console.log("Szukany projekt", searchedProject);
+            const searchedProject = await Project.findOne({ where: { id }, relations: ['users'] });
 
             res.status(200).json({ ok: true, message: "Poprawnie pobrano projekt", project: searchedProject})
 

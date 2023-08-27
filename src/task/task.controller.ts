@@ -34,6 +34,15 @@ export class TaskController {
         return await this.taskService.getTask(id, res);
     }
 
+    @Get('/project/:id')
+    @UseGuards(JwtAuthGuard)
+    async fetchAllTasksInProject(
+        @Param('id') id: string,
+        @Res() res: Response,
+    ){
+        return await this.taskService.fetchAllTasksInProject(id, res)
+    }
+
     @Post('/')
     @UseGuards(JwtAuthGuard)
     @UseRoles(Role.manager, Role.owner)

@@ -207,4 +207,30 @@ export class TaskService {
                 .json(error.message);
         }
     }
+
+    async fetchAllTasksInProject(id: string, res: Response){
+        try {
+            console.log(id);
+            if(!id){
+                res.status(500).json({
+                    ok: false, 
+                    tasks: null,
+                    message: "Nie ma takiego projektu"
+                });
+                return null;
+            } 
+            const tasks = await Task.fetchTasksInProject(id);
+            console.log(tasks);
+
+            res.status(200).json({
+                ok: true, 
+                tasks,
+                message: "Success",
+            });
+            return tasks;
+
+        } catch (error) {
+            res.status(500).json(error.message)
+        }
+    }
 }

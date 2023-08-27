@@ -62,5 +62,18 @@ export class Task extends BaseEntity {
 
     return searchedTasks;
     }
+
+    static async fetchTasksInProject(projectId: string){
+        const result = await this.createQueryBuilder('task')
+        .leftJoinAndSelect('task.project', 'project')
+        .getMany();
+
+        console.log(result);
+
+        const searchedTasks = result.filter(task => task.project).filter(task => task.project.id === projectId)
+
+        console.log(searchedTasks);
+        return searchedTasks;
+    }
 }
 
